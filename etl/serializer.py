@@ -41,10 +41,16 @@ class Serializer:
             director = []
             actors = []
             writers = []
+            directors = []
             for person in item.persons:
                 match person.role:
                     case 'director':
-                        director.append(person.name)
+                        directors.append(
+                            PersonBase(
+                                id=person.id,
+                                name=person.name,
+                            )
+                        )
                     case 'actor':
                         actors.append(
                             PersonBase(
@@ -54,6 +60,12 @@ class Serializer:
                         )
                         actors_names.append(person.name)
                     case 'writer':
+                        writers.append(
+                            PersonBase(
+                                id=person.id,
+                                name=person.name,
+                            )
+                        )
                         writers_names.append(person.name)
             elastic_item = ElasticFilmWork(
                 id=item.id,
@@ -61,11 +73,11 @@ class Serializer:
                 genre=item.genre,
                 title=item.title,
                 description=item.description,
-                director=director,
+                actors=actors,
+                writers=writers,
                 actors_names=actors_names,
                 writers_names=writers_names,
-                actors=actors,
-                writers=writers
+                directors=directors
             )
             result.append(elastic_item)
         return result

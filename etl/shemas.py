@@ -42,8 +42,8 @@ class ElasticFilmWork(BaseModel):
     genre: list[Genre]
     title: str
     description: str | None
-    director: list[str]
-    actors_names: list[str]
-    writers_names: list[str]
     actors: list[PersonBase]
     writers: list[PersonBase]
+    actors_names: list[str]
+    writers_names: list[str]
+    directors: list[PersonBase]
