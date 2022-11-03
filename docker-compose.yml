@@ -1,10 +1,12 @@
-version: '3'
+version: '3.5'
 
 services:
   django:
     build: ./app
     expose:
       - "8000"
+    networks:
+      - django
     env_file:
       - .env
     environment:
@@ -18,6 +20,8 @@ services:
     build: ./db
     expose:
       - ${DB_PORT}
+    networks:
+      - postgres
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -31,6 +35,8 @@ services:
     restart: always
     expose:
       - "80"
+    networks:
+      - nginx
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/configs:/etc/nginx/conf.d:ro
@@ -42,6 +48,8 @@ services:
 
   sqlite_to_postgres:
     build: ./sqlite_to_postgres
+    networks:
+      - sqlite_to_postgres
     env_file:
       - .env
     environment:
@@ -53,14 +61,18 @@ services:
     image: elasticsearch:7.17.6
     expose:
       - "9200"
+    networks:
+      - elastic
     environment:
       - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
       - discovery.type=single-node
     depends_on:
       - django
-    
+
   etl:
     build: ./etl
+    networks:
+      - etl
     env_file:
       - .env
     environment:
@@ -73,6 +85,19 @@ volumes:
   pgdata:
   static:
 
+networks:
+  django:
+    name: movies_net
+  postgres:
+    name: movies_net
+  nginx:
+    name: movies_net
+  sqlite_to_postgres:
+    name: movies_net
+  elastic:
+    name: movies_net
+  etl:
+    name: movies_net
 
 
 
